@@ -1,0 +1,58 @@
+<h1>Editar equipo</h1>
+<img src="{{team.crestUrl}}" alt="" height="270">
+<form action="/team/{{team.tla}}/edit" method="post" enctype="multipart/form-data">
+    <ul style="list-style: none; padding: 0; margin: 0;">
+        <li>
+            <label>Logo: </label>
+            <input type="file" name="logo">
+        </li>
+        <li>
+            <label>Nombre: </label>
+            <input type="text" name="name" placeholder="Arsenal FC" value="{{team.name}}" required>
+        </li>
+        <li>
+            <label>Sobrenombre: </label>
+            <input type="text" name="shortName" placeholder="Arsenal" value="{{team.shortName}}" required>
+        </li>
+        <li>
+            <label>Pais: </label>
+            <input type="text" name="area[name]" placeholder="England" value="{{team.area.name}}" required>
+        </li>
+        <li>
+            <label>TLA: </label>
+            <input type="text" name="tla" placeholder="ARS" value="{{team.tla}}" required>
+        </li>
+        <li>
+            <label>Dirección: </label>
+            <input type="text" name="address" placeholder="75 Drayton Park London N5 1BU" value="{{team.address}}"
+                required>
+        </li>
+        <li>
+            <label>Telefono: </label>
+            <input type="tel" name="phone" placeholder="+44 (020) 76195003" value="{{team.phone}}">
+        </li>
+        <li>
+            <label>Pagina web: </label>
+            <input type="url" name="website" placeholder="http://www.arsenal.com" value="{{team.website}}" required>
+        </li>
+        <li>
+            <label>Correo electronico: </label>
+            <input type="email" name="email" placeholder="info@arsenal.co.uk" value="{{team.email}}">
+        </li>
+        <li>
+            <label>Fundación: </label>
+            <input type="number" name="founded" placeholder="1886" value="{{team.founded}}" required>
+        </li>
+        <li>
+            <label>Colores del club: </label>
+            <input type="text" name="clubColors" placeholder="Red / White" value="{{team.clubColors}}" required>
+        </li>
+        <li>
+            <label>Estadio: </label>
+            <input type="text" name="venue" placeholder="Emirates Stadium" value="{{team.venue}}" required>
+        </li>
+        <li>
+            <input type="submit" value="Subir">
+        </li>
+    </ul>
+</form>

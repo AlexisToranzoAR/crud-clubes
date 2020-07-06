@@ -1,0 +1,49 @@
+<h1>Eliminar equipo</h1>
+<p>Todos los siguientes datos se perderan para siempre: </p>
+<img src="{{team.crestUrl}}" alt="" height="280">
+<table>
+    <tr>
+        <td><strong>Informacion</strong></td>
+        <td><strong>Valor</strong></td>
+    </tr>
+    <tr>
+        <td>Nombre</td>
+        <td>{{team.name}}</td>
+    </tr>
+    <tr>
+        <td>Pais</td>
+        <td>{{team.area.name}}</td>
+    </tr>
+    <tr>
+        <td>Colores</td>
+        <td>{{team.clubColors}}</td>
+    </tr>
+    <tr>
+        <td>Email</td>
+        <td>{{team.email}}</td>
+    </tr>
+    <tr>
+        <td>Fundado en</td>
+        <td>{{team.founded}}</td>
+    </tr>
+    <tr>
+        <td>Telefono</td>
+        <td>{{team.phone}}</td>
+    </tr>
+    <tr>
+        <td>Estadio</td>
+        <td>{{team.venue}}</td>
+    </tr>
+    <tr>
+        <td>Sitio Web</td>
+        <td><a href="{{team.website}}">{{team.website}}</a></td>
+    </tr>
+    <tr>
+        <td>Ultima Edición</td>
+        <td>{{team.lastUpdated}}</td>
+    </tr>
+</table>
+<form action="/team/{{team.tla}}/delete" method="POST">
+    <button type="submit">Eliminar</button>
+    <button type="button"><a href="/team/{{team.tla}}/see">Volver</a></button>
+</form>

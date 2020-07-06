@@ -1,0 +1,22 @@
+<h1>Crud Clubes de Futbol</h1>
+<p>Hay <strong>{{teams.length}} equipos</strong>
+    <button><a href="/create">Agregar</a></button>
+</p>
+<table>
+    <tr>
+        <td>Nombre Equipo</td>
+        <td>Pais</td>
+        <td>Acción</td>
+    </tr>
+    {{#each teams as |team|}}
+    <tr>
+        <td>{{team.shortName}}</td>
+        <td>{{team.area.name}}</td>
+        <td>
+            <a href="/team/{{team.tla}}/see">Ver, </a>
+            <a href="/team/{{team.tla}}/edit">Editar, </a>
+            <a href="/team/{{team.tla}}/delete">Eliminar.</a>
+        </td>
+    </tr>
+    {{/each}}
+</table>
