@@ -167,8 +167,14 @@ app.get('/team/:tla/delete', (req, res) => {
 
 app.post('/team/:tla/delete', (req, res) => {
     const tla = req.params.tla;
+    const team = require(`./data/equipos/${tla}.json`);
     const pathTeam = `./data/equipos/${tla}.json`;
+    const logoUrl = team.crestUrl;
     try {
+        if(logoUrl.startsWith('/')){
+            const pathLogo = `./data/logos${logoUrl}`;
+            fs.unlinkSync(pathLogo);
+        }
         fs.unlinkSync(pathTeam);
         let i = 0;
         for (let team of teams) {
