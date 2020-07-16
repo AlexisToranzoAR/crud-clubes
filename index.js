@@ -1,10 +1,13 @@
 const express = require('express');
-const exphbs = require('express-handlebars');
+const fs = require('fs');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const { v4: uuid } = require('uuid');
-const { body, validationResult } = require('express-validator');
-const fs = require('fs');
+
+const PUERTO = 8080;
+const app = express();
 
 const storage = multer.diskStorage({
     destination: './data/logos',
@@ -27,168 +30,113 @@ const upload = multer({
     }
 })
 
-const PUERTO = 8080;
-const app = express();
-const hbs = exphbs.create();
-
-app.engine('handlebars', hbs.engine);
-app.set('view engine', 'handlebars');
-
 app.use(express.static(`${__dirname}/data/logos`));
 
-const teams = require('./data/equipos.json');
+app.use(cors());
+
+app.use(bodyParser.json());
+app.use(bodyParser.text());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 const pathTeams = './data/equipos.json';
 
-app.get('/', (req, res) => {
-    res.render('index', {
-        layout: 'main',
-        teams,
-    })
-})
-
-app.get('/team/:tla/see', (req, res) => {
-    const tla = req.params.tla;
-    const team = require(`./data/equipos/${tla}.json`);
-    res.render('see', {
-        layout: 'main',
-        team,
-    })
-})
-
-app.get('/create', (req, res) => {
-    res.render('create', {
-        layout: 'main',
-    })
+app.get('/teams', (req, res) => {
+    try {
+        const teams = require('./data/equipos.json');
+        res.json(teams);
+    } catch (err) {
+        res.status(500).end('Archivo "equipos.json" no encontrado' + err);
+    }
 });
 
-app.post('/create', [
-    upload.single('logo'),
-    body('name').isLength({ min: 1, max: 30}),
-    body('shortName').isLength({ min: 1, max: 10 }),
-    body('area[name]').isLength({ min: 1, max: 10 }),
-    body('tla').isLength({ min: 1, max: 3}),
-    body('address').isLength({ min: 1, max: 40 }),
-    body('website').isURL(),
-    body('founded').isNumeric({ min: 4, max: 4}),
-    body('clubColors').isLength({ min: 4, max: 25 }),
-    body('venue').isLength({ min: 4, max: 20 })
-], (req, res) => {
-    const errors = validationResult(req);
-    const imgPath = `/${req.file.filename}`;
-    const dataTeam = req.body;
-    dataTeam.crestUrl = imgPath;
-    dataTeam.lastUpdated = new Date();
-    const pathDataTeam = `./data/equipos/${dataTeam.tla}.json`;
-
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ "No se pudieron cargar los datos debido a los siguientes datos erroneos": errors.array() })
-    }
-
-    if (fs.existsSync(pathDataTeam)) {
-        return res.status(422).send(`El equipo con el TLA "${dataTeam.tla}" ya es existente en la base de datos.`)
-    }
-
+app.put('/teams', (req, res) => {
+    const bodyTeams = req.body;
     try {
-        fs.writeFileSync(pathDataTeam, JSON.stringify(dataTeam));
-        teams.push(dataTeam);
-        fs.writeFileSync(pathTeams, JSON.stringify(teams));
+        if (fs.existsSync(pathTeams)) {
+            fs.writeFileSync(pathTeams, JSON.stringify(bodyTeams));
+            res.end('equipos.json actualizado correctamente.');
+        } else {
+            throw 'No se pudo actualizar equipos.json porque no existe.';
+        }
     } catch (err) {
-        res.status(500).end("No se pudo guardar el objeto en un archivo json");
-      }
-    res.send("Subido Correctamente")
+        res.status(404).end(err);
+    }
 })
 
-app.get('/team/:tla/edit', (req, res) => {
+app.get('/team/:tla', (req, res) => {
     const tla = req.params.tla;
-    const team = require(`./data/equipos/${tla}.json`);
-    res.render('edit', {
-        layout: 'main',
-        team
-    })
-})
-
-app.post('/team/:tla/edit', [
-    upload.single('logo'),
-    body('name').isLength({ min: 1, max: 30}),
-    body('shortName').isLength({ min: 1, max: 20 }),
-    body('area[name]').isLength({ min: 1, max: 10 }),
-    body('tla').isLength({ min: 1, max: 3}),
-    body('address').isLength({ min: 1, max: 40 }),
-    body('website').isURL(),
-    body('founded').isNumeric({ min: 4, max: 4}),
-    body('clubColors').isLength({ min: 4, max: 25 }),
-    body('venue').isLength({ min: 4, max: 20 })
-], (req, res) => {
-    const errors = validationResult(req);
-    const tla = req.params.tla;
-    const dataTeam = req.body;
-
-    if (req.file) {
-        const imgPath = `/${req.file.filename}`;
-        dataTeam.crestUrl = imgPath;
-    } else {
+    try {
         const team = require(`./data/equipos/${tla}.json`);
-        const imgPath = team.crestUrl;
-        dataTeam.crestUrl = imgPath;
+        res.json(team);
+    } catch (err) {
+        res.status(404).end(`Archivo "${tla}.json" no encontrado.`);
     }
+})
 
-    dataTeam.lastUpdated = new Date();
+app.post('/team/:tla', (req, res) => {
+    const tla = req.params.tla;
+    const bodyTeam = req.body;
     const pathTeam = `./data/equipos/${tla}.json`;
-
-    if (!errors.isEmpty()) {
-        return res.status(422).json({ "No se pudieron cargar los datos debido a los siguientes datos erroneos": errors.array() })
-    }
-
     try {
-        fs.writeFileSync(pathTeam, JSON.stringify(dataTeam));
-        let i = 0;
-        for (let team of teams) {
-            if (team.tla === tla){
-                teams.splice(i, 1, dataTeam);
-                fs.writeFileSync(pathTeams, JSON.stringify(teams));
-                break;
-            }
-            i++;
+        if (!fs.existsSync(pathTeam)) {
+            fs.writeFileSync(pathTeam, JSON.stringify(bodyTeam));
+            res.end(`${tla}.json creado correctamente.`);
+        } else {
+            throw `No se pudo crear ${tla}.json porque ya existe.`;
         }
     } catch (err) {
-        res.status(500).end("No se pudo guardar el objeto en un archivo json" + err);
-      }
-    res.send("Subido Correctamente");
+        res.status(404).end(err);
+    }
 })
 
-app.get('/team/:tla/delete', (req, res) => {
+app.put('/team/:tla', (req, res) => {
     const tla = req.params.tla;
-    const team = require(`./data/equipos/${tla}.json`);
-    res.render('delete', {
-        layout: 'main',
-        team
-    })
-})
-
-app.post('/team/:tla/delete', (req, res) => {
-    const tla = req.params.tla;
-    const team = require(`./data/equipos/${tla}.json`);
+    const bodyTeam = req.body;
     const pathTeam = `./data/equipos/${tla}.json`;
-    const logoUrl = team.crestUrl;
     try {
-        if(logoUrl.startsWith('/')){
-            const pathLogo = `./data/logos${logoUrl}`;
-            fs.unlinkSync(pathLogo);
+        if (fs.existsSync(pathTeam)) {
+            fs.writeFileSync(pathTeam, JSON.stringify(bodyTeam));
+            res.end(`${tla}.json actualizado correctamente.`);
+        } else {
+            throw `No se pudo actualizar ${tla}.json porque no existe.`;
         }
-        fs.unlinkSync(pathTeam);
-        let i = 0;
-        for (let team of teams) {
-            if (team.tla === tla){
-                teams.splice(i, 1);
-                fs.writeFileSync(pathTeams, JSON.stringify(teams));
-                break;
-            }
-            i++;
+    } catch (err) {
+        res.status(404).end(err);
+    }
+})
+
+app.delete('/team/:tla', (req, res) => {
+    const tla = req.params.tla;
+    const pathTeam = `./data/equipos/${tla}.json`;
+    try {
+        if (fs.existsSync(pathTeam)) {
+            fs.unlinkSync(pathTeam);
+            res.end(`${tla}.json eliminado correctamente.`);
+        } else {
+            throw `No se pudo eliminar ${tla}.json porque no existe.`;
         }
-      } catch(err) {
-        res.status(500).end("No se pudo eliminar el equipo" + err);
-      }
-    res.send("Eliminado Correctamente");
+    } catch (err) {
+        res.status(404).end(err);
+    }
+})
+
+app.post('/image', upload.single('logo'), (req, res) => {
+    res.end(req.file.filename);
+})
+
+app.delete('/image/:id', (req, res) => {
+    const id = req.params.id;
+    const pathImage = `./data/logos/${id}`;
+    try {
+        if (fs.existsSync(pathImage)) {
+            fs.unlinkSync(pathImage);
+            res.end('Imagen eliminada correctamente');
+        } else {
+            throw `No se pudo eliminar la imagen porque no existe.`;
+        }
+    } catch (err) {
+        res.status(404).end(err);
+    }
 })
 
 app.listen(PUERTO);

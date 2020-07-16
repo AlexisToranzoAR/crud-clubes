@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <title>CRUD Clubes</title>
+</head>
+
+<body>
+    <div id="top-alert" class="container mt-2">
+
+    </div>
+    <h1 class="display-4 text-center mb-0" id="title">CRUD Clubes de Futbol</h1>
+    <br>
+    <div class="container" id="main">
+        <h5>
+            Hay <span id="quantity-of-teams"></span> equipos
+            <button type="button" class="btn btn-outline-primary btn-sm" id="create-btn">Agregar</button>
+        </h5>
+        <table class="table" id="teams-table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Nacionalidad</th>
+                    <th scope="col">Acción</th>
+                </tr>
+            </thead>
+            <tbody id="teams">
+
+            </tbody>
+        </table>
+    </div>
+    <div class="container d-none" id="see-team">
+        <div class="row">
+            <div class="col-sm-6">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td>Nombre completo</td>
+                            <td id="team-name"></td>
+                        </tr>
+                        <tr>
+                            <td>Apodo</td>
+                            <td id="team-shortname"></td>
+                        </tr>
+                        <tr>
+                            <td>Pais de origen</td>
+                            <td id="team-area-name"></td>
+                        </tr>
+                        <tr>
+                            <td>TLA</td>
+                            <td id="team-tla"></td>
+                        </tr>
+                        <tr>
+                            <td>Direccion</td>
+                            <td id="team-address"></td>
+                        </tr>
+                        <tr>
+                            <td>Telefono</td>
+                            <td><a href="" id="team-phone"></a></td>
+                        </tr>
+                        <tr>
+                            <td>Pagina web</td>
+                            <td><a href="" target="__blank" id="team-website"></a></td>
+                        </tr>
+                        <tr>
+                            <td>Correo electronico</td>
+                            <td><a href="" id="team-email"></a></td>
+                        </tr>
+                        <tr>
+                            <td>Fundado en</td>
+                            <td id="team-founded"></td>
+                        </tr>
+                        <tr>
+                            <td>Colores del club</td>
+                            <td id="team-clubcolors"></td>
+                        </tr>
+                        <tr>
+                            <td>Estadio</td>
+                            <td id="team-venue"></td>
+                        </tr>
+                        <tr>
+                            <td>Ultima actualización</td>
+                            <td id="team-lastupdated"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-6">
+                <img src="" id="team-logo" class="mx-auto d-block" alt="" width="600" height="400">
+                <nav class="text-center my-2">
+                    <button type="button" class="delete-btn btn btn-outline-danger">Eliminar</button>
+                    <button type="button" class="main-btn btn btn-outline-primary">Volver</button>
+                    <button type="button" class="edit-btn btn btn-outline-warning">Editar</button>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div class="container d-none" id="edit-team">
+        <div class="row">
+            <div class="col-sm-6">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <td>Nombre completo</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-edit-name">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Apodo</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-edit-shortname">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Pais de origen</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-edit-area-name">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TLA</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-edit-tla" placeholder="Obligatorio" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Direccion</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-edit-address">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Telefono</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-edit-phone">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Pagina web</td>
+                            <td>
+                                <input class="form-control" type="url" id="team-edit-website">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Correo electronico</td>
+                            <td>
+                                <input class="form-control" type="email" id="team-edit-email">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Fundado en</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-edit-founded">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Colores del club</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-edit-clubcolors">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Estadio</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-edit-venue">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Ultima actualización</td>
+                            <td id="team-edit-lastupdated"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-6">
+                <img src="" id="team-edit-logo" class="mx-auto d-block" alt="" width="600" height="400">
+                <div class="input-group mt-2">
+                    <div class="custom-file">
+                      <input type="file" accept="image/*" class="custom-file-input" id="edit-image">
+                      <label class="custom-file-label" for="edit-image">Elegir imagen</label>
+                    </div>
+                </div>
+                <nav class="text-center my-2" id="team-nav">
+                    <button type="button" class="cancel-btn btn btn-outline-danger">Cancelar</button>
+                    <button type="button" class="main-btn btn btn-outline-primary">Volver</button>
+                    <button type="button" id="save-edit-btn" class="btn btn-outline-warning">Guardar</button>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div class="container d-none" id="create-team">
+        <div class="row">
+            <div class="col-sm-6">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Caracteristica</th>
+                            <th scope="col">Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Nombre completo</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-create-name">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Apodo</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-create-shortname">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Pais de origen</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-create-area-name">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>TLA</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-create-tla" placeholder="Obligatorio" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Direccion</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-create-address">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Telefono</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-create-phone">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Pagina web</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-create-website">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Correo electronico</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-create-email">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Fundado en</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-create-founded">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Colores del club</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-create-clubcolors">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Estadio</td>
+                            <td>
+                                <input class="form-control" type="text" id="team-create-venue">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Fecha de creación</td>
+                            <td id="team-create-lastupdated"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-6">
+                <img src="" alt="" id="preview-image" width="400" class="mx-auto d-block">
+                <div class="input-group mt-2">
+                    <div class="custom-file">
+                      <input type="file" accept="image/*" class="custom-file-input" id="create-image">
+                      <label class="custom-file-label" for="create-image">Elegir imagen</label>
+                    </div>
+                </div>
+                <nav class="text-center my-2" id="team-nav">
+                    <button type="button" class="cancel-btn btn btn-outline-danger">Cancelar</button>
+                    <button type="button" class="main-btn btn btn-outline-primary">Volver</button>
+                    <button type="button" id="save-create-btn" class="save-btn btn btn-outline-warning">Guardar</button>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/popper.js/dist/umd/popper.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="src/main.js" type="module"></script>
+</body>
+
+</html>
