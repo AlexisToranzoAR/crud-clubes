@@ -3,13 +3,15 @@ import {
     updateTeam
 } from '../services/teams.js'
 import seeTeam from './see.js';
-import displayTopAlert from './alerts.js';
+import displayAlert from './utilities/alert.js';
 import { updateImage } from '../services/image.js';
 
 let teamGlobal = {};
 
 $(document).on('click', '.cancel-btn', seeTeam);
+
 $('#save-edit-btn').click(saveTeam);
+
 $("#edit-image").change(function() {
     readURL(this);
 });
@@ -69,17 +71,19 @@ async function saveTeam (team) {
     try {
         await updateImage(formData,updatedTeam);
         await updateTeam(updatedTeam);
+        const alertId = 'top-alert';
         const alertMessage = 'Actualización exitosa del equipo de futbol ';
         const strongerMessage = `${updatedTeam.name}`;
         const alertType = 'success';
         $('.cancel-btn').first().trigger('click')
-        displayTopAlert(alertMessage, alertType, strongerMessage);
+        displayAlert(alertId, alertMessage, alertType, strongerMessage);
     } catch (error) {
+        const alertId = 'top-alert';
         const alertMessage = 'No se pudo actualizar el equipo de futbol ';
         const strongerMessage = `${updatedTeam.name}`;
         const alertType = 'danger';
         $('.cancel-btn').first().trigger('click')
-        displayTopAlert(alertMessage, alertType, strongerMessage);
+        displayAlert(alertId, alertMessage, alertType, strongerMessage);
     }
 }
 

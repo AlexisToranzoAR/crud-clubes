@@ -1,8 +1,8 @@
 import {
     createTeam as cTeam
 } from '../services/teams.js';
-import showTeams from './home-page.js';
-import displayTopAlert from './alerts.js';
+import homePage from './main.js';
+import displayAlert from './utilities/alert.js';
 import { uploadImage } from '../services/image.js';
 
 $('#save-create-btn').click(saveTeam);
@@ -48,15 +48,17 @@ async function saveTeam() {
     try {
         await uploadImage(formData,team);
         await cTeam(team);
+        const alertId = 'top-alert';
         const alertMessage = 'El equipo se creo exitosamente';
         const alertType = 'success';
-        showTeams();
-        displayTopAlert(alertMessage, alertType);
+        homePage();
+        displayAlert(alertId, alertMessage, alertType);
     } catch (error) {
+        const alertId = 'top-alert';
         const alertMessage = 'No se pudo crear el equipo ';
         const alertType = 'danger';
-        showTeams();
-        displayTopAlert(error, alertType);
+        homePage();
+        displayAlert(alertId, alertMessage, alertType);
     }
 }
 

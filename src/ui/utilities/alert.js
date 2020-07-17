@@ -1,5 +1,5 @@
-export default function displayTopAlert(text, alertType, strongText = '') {
-    $('#top-alert').html(`
+export default function displayAlert(divId, text, alertType, strongText = '') {
+    $(`#${divId}`).html(`
       <div class="alert alert-${alertType} alert-dismissible show" role="alert">
           <span>${text}</span>
           <strong>${strongText}</strong>

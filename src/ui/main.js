@@ -11,10 +11,15 @@ import createTeam from './create.js';
 $(document).on('click', '.see-btn', seeTeam);
 $(document).on('click', '.edit-btn', editTeam);
 $(document).on('click', '.delete-btn', deleteTeam);
-$(document).on('click', '.main-btn', showTeams);
+$(document).on('click', '.main-btn', homePage);
 $('#create-btn').click(createTeam);
 
-export default async function showTeams() {
+export default async function homePage(teams) {
+    if (teams === undefined) {
+        teams = await retrieveTeams()
+    } else {
+        console.log("No solicito de api")
+    }
     $(".alert").alert('close')
     $('#create-team').addClass('d-none');
     $('#see-team').addClass('d-none');
@@ -22,7 +27,7 @@ export default async function showTeams() {
     $('#main').removeClass('d-none');
     $('#teams').empty();
     $('#title').html('CRUD Clubes de Futbol')
-    const teams = await retrieveTeams();
+    console.log(teams)
     $('#quantity-of-teams').html(teams.length);
     teams.forEach((team, i) => {
         $('#teams').append(`

@@ -26,7 +26,7 @@ export async function updateTeam (dataTeam) {
     try {
         const tla = dataTeam.tla;
         const classTeam = mapearTeam(dataTeam);
-        await putTeam(tla, classTeam);
+        return await putTeam(tla, classTeam);
     } catch (error) {
         throw new Error(`Fallo actualizando ${tla}.json`);
     }

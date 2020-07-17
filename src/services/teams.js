@@ -19,7 +19,7 @@ export async function createTeam(dataTeam) {
         delete dataTeam.activeCompetitions;
         delete dataTeam.squad;
         dataTeams.splice(dataTeams.length, 1, dataTeam);
-        await uTeams(dataTeams);
+        return await uTeams(dataTeams);
     } catch (error) {
         throw console.error(error);
     }
@@ -50,8 +50,7 @@ export async function updateTeam (dataTeam) {
         for (let i = 0; i < quantityOfTeams; i++) {
             if (dataTeams[i].tla === tla) {
                 dataTeams.splice(i, 1, dataTeam);
-                await uTeams(dataTeams);
-                return;
+                return await uTeams(dataTeams);
             }
         }
         throw new Error(`No se pudo actualizar al equipo con TLA: ${tla}`);
@@ -64,15 +63,15 @@ export async function deleteTeam (tla) {
     if (tla === undefined) {
         throw new Error('Se necesita un identificador TLA para eliminar un equipo');
     }
+
     try {
         const dataTeams = await rTeams();
         const quantityOfTeams = dataTeams.length;
         for (let i = 0; i < quantityOfTeams; i++) {
             if (dataTeams[i].tla === tla) {
                 dataTeams.splice(i, 1);
-                await uTeams(dataTeams);
                 await dTeam(tla);
-                return;
+                return await uTeams(dataTeams);
             }
         }
         throw new Error(`No se pudo borrar al equipo con TLA: ${tla}`);

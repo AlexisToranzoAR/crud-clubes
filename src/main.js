@@ -1,3 +1,3 @@
-import showTeams from './ui/home-page.js'
+import homePage from './ui/main.js'
 
-showTeams();
+homePage();

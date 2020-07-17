@@ -53,8 +53,12 @@ app.put('/teams', (req, res) => {
     const bodyTeams = req.body;
     try {
         if (fs.existsSync(pathTeams)) {
+            console.log("Se actualizo teams")
+            console.log(bodyTeams)
             fs.writeFileSync(pathTeams, JSON.stringify(bodyTeams));
-            res.end('equipos.json actualizado correctamente.');
+            const teams = require('./data/equipos.json');
+            console.log(teams)
+            res.send(teams);
         } else {
             throw 'No se pudo actualizar equipos.json porque no existe.';
         }
@@ -96,7 +100,8 @@ app.put('/team/:tla', (req, res) => {
     try {
         if (fs.existsSync(pathTeam)) {
             fs.writeFileSync(pathTeam, JSON.stringify(bodyTeam));
-            res.end(`${tla}.json actualizado correctamente.`);
+            const team = require(`./data/equipos/${tla}.json`);
+            res.send(team);
         } else {
             throw `No se pudo actualizar ${tla}.json porque no existe.`;
         }

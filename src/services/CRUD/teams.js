@@ -20,7 +20,11 @@ export async function updateTeams (dataTeams) {
     }
     try {
         const classTeams = mapearTeams(dataTeams);
-        await putTeams(classTeams);
+        console.log('CRUDD')
+        console.log(classTeams)
+        const ola = await putTeams(classTeams);
+        console.log(ola)
+        return ola
     } catch (error) {
         throw new Error('Fallo actualizando equipos.json' + error);
     }
