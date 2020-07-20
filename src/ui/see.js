@@ -1,12 +1,8 @@
-import {
-    retrieveTeam
-} from '../services/teams.js';
+import { retrieveTeam } from '../services/clubs.js';
 
-export default async function seeTeam (e) {
+export default async function seeTeam (tla) {
     $(".alert").alert('close')
-    const tla = e.target.parentElement.id;
     const team = await retrieveTeam(tla);
-
     $('#team-logo').attr('src',team.crestUrl);
     $('#see-team nav').attr('id',tla);
     $('#team-name').html(team.name);

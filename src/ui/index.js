@@ -1,25 +1,26 @@
-/// <reference types="jquery" />
-
 import {
-    retrieveTeams
-} from '../services/teams.js';
+    retrieveTeams as retrieveTeamsFromServices
+} from '../services/clubs.js';
 import seeTeam from './see.js';
 import editTeam from './edit.js';
 import deleteTeam from './delete.js';
 import createTeam from './create.js';
 
-$(document).on('click', '.see-btn', seeTeam);
-$(document).on('click', '.edit-btn', editTeam);
+$(document).on('click', '.see-btn', function(e) {
+    const tla = e.target.parentElement.id;
+    seeTeam(tla);
+});
+$(document).on('click', '.edit-btn', function(e) {
+    const tla = e.target.parentElement.id;
+    editTeam(tla);
+});
 $(document).on('click', '.delete-btn', deleteTeam);
 $(document).on('click', '.main-btn', homePage);
 $('#create-btn').click(createTeam);
 
-export default async function homePage(teams) {
-    if (teams === undefined) {
-        teams = await retrieveTeams()
-    } else {
-        console.log("No solicito de api")
-    }
+export default async function homePage() {
+    const teams = await retrieveTeamsFromServices();
+
     $(".alert").alert('close')
     $('#create-team').addClass('d-none');
     $('#see-team').addClass('d-none');
@@ -27,8 +28,8 @@ export default async function homePage(teams) {
     $('#main').removeClass('d-none');
     $('#teams').empty();
     $('#title').html('CRUD Clubes de Futbol')
-    console.log(teams)
     $('#quantity-of-teams').html(teams.length);
+    
     teams.forEach((team, i) => {
         $('#teams').append(`
             <tr>

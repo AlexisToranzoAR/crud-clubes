@@ -1,3 +1,3 @@
-import homePage from './ui/main.js'
+import homePage from './ui/index.js'
 
 homePage();

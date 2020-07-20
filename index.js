@@ -4,21 +4,22 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
-const { v4: uuid } = require('uuid');
 
 const PUERTO = 8080;
+const SERVEURL = `http://localhost:${PUERTO}`;
 const app = express();
 
 const storage = multer.diskStorage({
     destination: './data/logos',
     filename: (req, file, cb) => {
-        cb(null, uuid() + path.extname(file.originalname).toLowerCase());
+        const fileName = req.params.tla
+        cb(null, fileName + path.extname(file.originalname).toLowerCase());
     }
 })
 const upload = multer({
     storage,
     dest: './data/logos',
-    limits: {fileSize: 3000000},
+    limits: { fileSize: 3000000 },
     fileFilter: (req, file, cb) => {
         const filetypes = /jpeg|jpg|png|svg/;
         const mimetype = filetypes.test(file.mimetype);
@@ -26,7 +27,7 @@ const upload = multer({
         if (mimetype && extname) {
             return cb(null, true);
         }
-        cb("Error: El archivo debe ser una imagen valida");
+        cb("El archivo debe ser una imagen valida");
     }
 })
 
@@ -38,29 +39,37 @@ app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const teams = require('./data/equipos.json');
 const pathTeams = './data/equipos.json';
 
 app.get('/teams', (req, res) => {
     try {
-        const teams = require('./data/equipos.json');
         res.json(teams);
-    } catch (err) {
-        res.status(500).end('Archivo "equipos.json" no encontrado' + err);
+    } catch (error) {
+        res.status(404).end(err);
     }
-});
+})
 
-app.put('/teams', (req, res) => {
-    const bodyTeams = req.body;
+app.post('/team/:tla', upload.single('logo'), (req, res) => {
+    const tla = req.params.tla;
+    const dataTeam = JSON.parse(req.body.team);
+    dataTeam.tla = tla;
+    const pathTeam = `./data/equipos/${tla}.json`;
     try {
-        if (fs.existsSync(pathTeams)) {
-            console.log("Se actualizo teams")
-            console.log(bodyTeams)
-            fs.writeFileSync(pathTeams, JSON.stringify(bodyTeams));
-            const teams = require('./data/equipos.json');
-            console.log(teams)
-            res.send(teams);
+        if (!fs.existsSync(pathTeam)) {
+            if (req.file) {
+                dataTeam.crestUrl = `${SERVEURL}/${req.file.filename}`;
+            } else {
+                dataTeam.crestUrl = `${SERVEURL}/error.jpg`
+            }
+            fs.writeFileSync(pathTeam, JSON.stringify(dataTeam));
+            delete dataTeam.activeCompetitions;
+            delete dataTeam.squad;
+            teams.splice(teams.length, 1, dataTeam);
+            fs.writeFileSync(pathTeams, JSON.stringify(teams));
+            res.json(teams);
         } else {
-            throw 'No se pudo actualizar equipos.json porque no existe.';
+            throw `No se pudo crear ${tla}.json porque ya existe.`;
         }
     } catch (err) {
         res.status(404).end(err);
@@ -77,31 +86,27 @@ app.get('/team/:tla', (req, res) => {
     }
 })
 
-app.post('/team/:tla', (req, res) => {
+app.put('/team/:tla', upload.single('logo'), (req, res) => {
     const tla = req.params.tla;
-    const bodyTeam = req.body;
-    const pathTeam = `./data/equipos/${tla}.json`;
-    try {
-        if (!fs.existsSync(pathTeam)) {
-            fs.writeFileSync(pathTeam, JSON.stringify(bodyTeam));
-            res.end(`${tla}.json creado correctamente.`);
-        } else {
-            throw `No se pudo crear ${tla}.json porque ya existe.`;
-        }
-    } catch (err) {
-        res.status(404).end(err);
-    }
-})
-
-app.put('/team/:tla', (req, res) => {
-    const tla = req.params.tla;
-    const bodyTeam = req.body;
+    const dataTeam = JSON.parse(req.body.team);
+    dataTeam.tla = tla;
     const pathTeam = `./data/equipos/${tla}.json`;
     try {
         if (fs.existsSync(pathTeam)) {
-            fs.writeFileSync(pathTeam, JSON.stringify(bodyTeam));
-            const team = require(`./data/equipos/${tla}.json`);
-            res.send(team);
+            if (req.file) {
+                dataTeam.crestUrl = `${SERVEURL}/${req.file.filename}`;
+            }
+            fs.writeFileSync(pathTeam, JSON.stringify(dataTeam));
+            delete dataTeam.activeCompetitions;
+            delete dataTeam.squad;
+            const quantityOfTeams = teams.length;
+            for (let i = 0; i < quantityOfTeams; i++) {
+                if (teams[i].tla === tla) {
+                    dataTeams.splice(i, 1, dataTeam);
+                    fs.writeFileSync(pathTeams, JSON.stringify(teams));
+                }
+            }
+            res.json(teams);
         } else {
             throw `No se pudo actualizar ${tla}.json porque no existe.`;
         }
@@ -115,8 +120,16 @@ app.delete('/team/:tla', (req, res) => {
     const pathTeam = `./data/equipos/${tla}.json`;
     try {
         if (fs.existsSync(pathTeam)) {
+            const quantityOfTeams = teams.length;
+            for (let i = 0; i < quantityOfTeams; i++) {
+                if (teams[i].tla === tla) {
+                    teams.splice(i, 1);
+                    fs.writeFileSync(pathTeams, JSON.stringify(teams));
+                }
+            }
+            deleteLogo(tla);
             fs.unlinkSync(pathTeam);
-            res.end(`${tla}.json eliminado correctamente.`);
+            res.json(teams);
         } else {
             throw `No se pudo eliminar ${tla}.json porque no existe.`;
         }
@@ -125,24 +138,17 @@ app.delete('/team/:tla', (req, res) => {
     }
 })
 
-app.post('/image', upload.single('logo'), (req, res) => {
-    res.end(req.file.filename);
-})
-
-app.delete('/image/:id', (req, res) => {
-    const id = req.params.id;
-    const pathImage = `./data/logos/${id}`;
-    try {
-        if (fs.existsSync(pathImage)) {
-            fs.unlinkSync(pathImage);
-            res.end('Imagen eliminada correctamente');
-        } else {
-            throw `No se pudo eliminar la imagen porque no existe.`;
+function deleteLogo(tla) {
+    const team = require(`./data/equipos/${tla}.json`);
+    const logoUrl = new URL(team.crestUrl);
+    if (logoUrl.origin === SERVEURL) {
+        const pathLogo = `./data/logos${logoUrl.pathname}`;
+        if (fs.existsSync(pathLogo)) {
+            fs.unlinkSync(pathLogo);
+            return;
         }
-    } catch (err) {
-        res.status(404).end(err);
     }
-})
+}
 
 app.listen(PUERTO);
 console.log(`Escuchando en el Puerto: ${PUERTO}`);

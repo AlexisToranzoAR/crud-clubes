@@ -1,41 +1,43 @@
 import {
     retrieveTeam,
     updateTeam
-} from '../services/teams.js'
+} from '../services/clubs.js';
 import seeTeam from './see.js';
-import displayAlert from './utilities/alert.js';
-import { updateImage } from '../services/image.js';
+import displayAlert from './utilities/alert.js'
 
-let teamGlobal = {};
+$(document).on('click', '.cancel-btn', function (e) {
+    const tla = e.target.parentElement.id;
+    seeTeam(tla)
+});
 
-$(document).on('click', '.cancel-btn', seeTeam);
-
-$('#save-edit-btn').click(saveTeam);
-
-$("#edit-image").change(function() {
+$("#edit-image").change(function () {
     readURL(this);
 });
 
-export default async function editTeam (e) {
+export default async function editTeam(tla) {
+    $('#save-edit-btn').click(function (e) {
+        saveTeam(team);
+    });
+
     $(".alert").alert('close');
-    const tla = e.target.parentElement.id;
+
     const team = await retrieveTeam(tla);
-    teamGlobal = team;
     const date = new Date();
     const actualDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-    $('#team-edit-logo').attr('src',team.crestUrl);
-    $('#edit-team nav').attr('id',tla);
-    $('#team-edit-name').attr('value',team.name);
-    $('#team-edit-shortname').attr('value',team.shortName);
-    $('#team-edit-area-name').attr('value',team.area.name);
-    $('#team-edit-tla').attr('value',team.tla);
-    $('#team-edit-address').attr('value',team.address);
-    $('#team-edit-phone').attr('value',team.phone);
-    $('#team-edit-website').attr('value',team.website);
-    $('#team-edit-email').attr('value',team.email);
-    $('#team-edit-founded').attr('value',team.founded);
-    $('#team-edit-clubcolors').attr('value',team.clubColors);
-    $('#team-edit-venue').attr('value',team.venue);
+
+    $('#team-edit-logo').attr('src', team.crestUrl);
+    $('#edit-team nav').attr('id', tla);
+    $('#team-edit-name').attr('value', team.name);
+    $('#team-edit-shortname').attr('value', team.shortName);
+    $('#team-edit-area-name').attr('value', team.area.name);
+    $('#team-edit-tla').attr('value', team.tla);
+    $('#team-edit-address').attr('value', team.address);
+    $('#team-edit-phone').attr('value', team.phone);
+    $('#team-edit-website').attr('value', team.website);
+    $('#team-edit-email').attr('value', team.email);
+    $('#team-edit-founded').attr('value', team.founded);
+    $('#team-edit-clubcolors').attr('value', team.clubColors);
+    $('#team-edit-venue').attr('value', team.venue);
     $('#team-edit-lastupdated').html(actualDate);
     $('#title').html('Editar: ' + team.name);
     $('#main').addClass('d-none');
@@ -43,12 +45,12 @@ export default async function editTeam (e) {
     $('#edit-team').removeClass('d-none');
 }
 
-async function saveTeam (team) {
+async function saveTeam(team) {
     const updatedTeam = {
-        activeCompetitions: teamGlobal.activeCompetitions,
-        squad: teamGlobal.squad,
+        activeCompetitions: team.activeCompetitions,
+        squad: team.squad,
         area: {
-            id: teamGlobal.area.id,
+            id: team.area.id,
             name: $('#team-edit-area-name').val()
         },
         name: $('#team-edit-name').val(),
@@ -65,12 +67,10 @@ async function saveTeam (team) {
     }
 
     const inpFile = document.getElementById("edit-image");
-    const formData = new FormData();
-    formData.append('logo', inpFile.files[0]);
+    const dataLogo = inpFile.files[0];
 
     try {
-        await updateImage(formData,updatedTeam);
-        await updateTeam(updatedTeam);
+        await updateTeam(updatedTeam, dataLogo);
         const alertId = 'top-alert';
         const alertMessage = 'Actualización exitosa del equipo de futbol ';
         const strongerMessage = `${updatedTeam.name}`;
@@ -89,10 +89,10 @@ async function saveTeam (team) {
 
 function readURL(input) {
     if (input.files && input.files[0]) {
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        $('#team-edit-logo').attr('src', e.target.result);
-      }
-      reader.readAsDataURL(input.files[0]);
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            $('#team-edit-logo').attr('src', e.target.result);
+        }
+        reader.readAsDataURL(input.files[0]);
     }
-  }
+}

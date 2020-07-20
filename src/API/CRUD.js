@@ -1,35 +1,5 @@
 const serverUrl = 'http://localhost:8080';
 
-export async function postImage (imageData) {
-    const imageUrl = serverUrl + '/image';
-    const init = { 
-        method: 'POST',
-        body: imageData,
-    };
-    return fetch(imageUrl,init)
-        .then((response) => {
-            if (response.ok) {
-                return response.text();
-            }
-            throw new Error(`${response.status} http error en postImage`); 
-        })
-        .then((response) => {
-            return `${serverUrl}/${response}`;
-        })
-}
-
-export async function deleteImage (imageUrl) {
-    const init = { 
-        method: 'DELETE'
-    };
-    return fetch(imageUrl,init)
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error(`No se pudo eliminar la imagen con id: ${id}`);
-            }
-        })
-}
-
 export async function getTeams () {
     const teamsUrl = serverUrl + '/teams';
     return fetch(teamsUrl)
@@ -41,31 +11,26 @@ export async function getTeams () {
         })
 }
 
-export async function putTeams (teamsJson) {
-    if (teamsJson === undefined || !typeof teamsJson === 'object') {
-        throw new Error('Se necesita un objeto para actualizar equipos.json');
-    }
-    const teamsUrl = serverUrl + '/teams';
+export async function postTeam (tla, formData) {
+    const teamUrl = `${serverUrl}/team/${tla}`;
     const init = { 
-        method: 'PUT',
-        body: JSON.stringify(teamsJson),
+        method: 'POST',
+        body: formData,
         headers:{
-            'Content-Type': 'application/json'
+            'Content-Type': 'multipart/form-data'
         }
     };
-    return fetch(teamsUrl,init)
+
+    return fetch(teamUrl, init)
         .then((response) => {
             if (response.ok) {
                 return response.json();
             }
-            throw new Error('No se pudo actualizar equipos.json en putTeams');
+            throw new Error(`${response.status} http error en postTeam`); 
         })
 }
 
 export async function getTeam (tla) {
-    if (tla === undefined) {
-        throw new Error('Se necesita un identificador TLA solicitar un equipo');
-    }
     const teamUrl = serverUrl + `/team/${tla}`;
     return fetch(teamUrl)
         .then((response) => {
@@ -76,16 +41,14 @@ export async function getTeam (tla) {
         })
 }
 
-export async function putTeam (tla, teamJson) {
-    if (tla === undefined || teamJson === undefined || !typeof teamJson === 'object') {
-        throw new Error('Se necesita un identificador TLA y un objeto para actualizar un equipo');
-    }
+export async function putTeam (tla, formData) {
+    console.log(formData)
     const teamUrl = serverUrl + `/team/${tla}`;
     const init = { 
         method: 'PUT',
-        body: JSON.stringify(teamJson),
+        body: formData,
         headers:{
-            'Content-Type': 'application/json'
+            'Content-Type': 'multipart/form-data;boundary=----WebKitFormBoundaryyrV7KO0BoCBuDbTL'
         }
     };
     return fetch(teamUrl,init)
@@ -97,30 +60,7 @@ export async function putTeam (tla, teamJson) {
         })
 }
 
-export async function postTeam (tla, teamJson) {
-    if (tla === undefined || teamJson === undefined || !typeof teamJson === 'object') {
-        throw new Error('Se necesita un identificador TLA y un objeto para crear un equipo');
-    }
-    const teamUrl = serverUrl + `/team/${tla}`;
-    const init = { 
-        method: 'POST',
-        body: JSON.stringify(teamJson),
-        headers:{
-            'Content-Type': 'application/json'
-        }
-    };
-    return fetch(teamUrl,init)
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error(`No se pudo crear ${tla}.json en postTeam`);
-            }
-        })
-}
-
 export async function deleteTeam (tla) {
-    if (tla === undefined) {
-        throw new Error('Se necesita un identificador TLA para eliminar un equipo');
-    }
     const teamUrl = serverUrl + `/team/${tla}`;
     const init = { 
         method: 'DELETE'

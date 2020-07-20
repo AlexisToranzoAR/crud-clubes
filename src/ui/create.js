@@ -1,9 +1,8 @@
 import {
-    createTeam as cTeam
-} from '../services/teams.js';
-import homePage from './main.js';
+    createTeam as createTeamFromServices
+} from '../services/clubs.js';
+import homePage from './index.js';
 import displayAlert from './utilities/alert.js';
-import { uploadImage } from '../services/image.js';
 
 $('#save-create-btn').click(saveTeam);
 $("#create-image").change(function() {
@@ -42,12 +41,10 @@ async function saveTeam() {
     }
 
     const inpFile = document.getElementById("create-image");
-    const formData = new FormData();
-    formData.append('logo', inpFile.files[0]);
+    const dataLogo = inpFile.files[0];
 
     try {
-        await uploadImage(formData,team);
-        await cTeam(team);
+        await createTeamFromServices(team, dataLogo);
         const alertId = 'top-alert';
         const alertMessage = 'El equipo se creo exitosamente';
         const alertType = 'success';
