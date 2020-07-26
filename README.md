@@ -5,6 +5,7 @@ _Muestra una lista de equipos de futbol obtenidos de una API y estos pueden ser 
 ### Pre-requisitos 📋
 _Es necesario tener instalado NodeJS para utlizar npm, se lo puede instalar en el siguiente link:_
 [NodeJS](https://nodejs.org/es/)._
+
 _http-server para ejecutar el html. Se instala con el comando:_
 ```
 npm --save-dev i http-server
