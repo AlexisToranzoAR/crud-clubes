@@ -3,7 +3,7 @@
 _Muestra una lista de equipos de futbol obtenidos de una API y estos pueden ser borrados, modificados y vistos en detalle. También se pueden crear equipos nuevos._
 
 ### Pre-requisitos 📋
-_Es necesario tener instalado NodeJS para utlizar npm, se lo puede instalar en el siguiente link:_
+_Es necesario tener instalado NodeJS para utlizar npm, se lo puede instalar en el siguiente link:
 [NodeJS](https://nodejs.org/es/)._
 
 _http-server para ejecutar el html. Se instala con el comando:_
