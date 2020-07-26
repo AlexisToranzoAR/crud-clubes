@@ -48,7 +48,7 @@ export async function putTeam (tla, formData) {
         method: 'PUT',
         body: formData,
         headers:{
-            'Content-Type': 'multipart/form-data;boundary=----WebKitFormBoundaryyrV7KO0BoCBuDbTL'
+            'Content-Type': 'multipart/form-data'
         }
     };
     return fetch(teamUrl,init)
