@@ -33,6 +33,10 @@ _Para ejecutar la aplicacion frontend unicamente:_
 npm run serve
 ```
 
+## Colección de Postman 📚
+
+Para ver la colección de Postman mire el archivo [crud-clubes.postman_collection.json](crud-clubes.postman_collection.json).
+
 ## Construido con 🛠️
 
 * [Npm](http://npmjs.com/) - Manejador de dependencias
